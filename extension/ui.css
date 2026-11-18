@@ -1,0 +1,151 @@
+:root {
+  color-scheme: light dark;
+  --background: #f3f3f8;
+  --surface: #fff;
+  --inset: #ededf5;
+  --text: #171721;
+  --muted: #545466;
+  --line: #dddde7;
+  --outline: #707085;
+  --accent: #3e50c4;
+  --focus: #3e50c4;
+  --on-accent: #fff;
+  --notice: #853518;
+  --radius: 12px;
+  font: 14px/1.5 system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #171721;
+    --surface: #1e1e2a;
+    --inset: #272735;
+    --text: #ededf3;
+    --muted: #c3c3cc;
+    --line: #3b3b49;
+    --outline: #858593;
+    --accent: #5266eb;
+    --focus: #a5afff;
+    --notice: #ffbaa2;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--background); color: var(--text); }
+button, input { font: inherit; }
+[hidden] { display: none !important; }
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.brand .brand-icon {
+  display: grid;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+}
+
+.popup { width: 320px; padding: 16px; }
+.popup main { margin-top: 16px; }
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 550;
+  line-height: 1.25;
+}
+
+p { margin: 0; }
+.muted, .suffix { color: var(--muted); }
+.surface { border-radius: var(--radius); background: var(--surface); }
+.list { margin-top: 12px; padding: 4px 12px; }
+
+.check-row, .choice {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 12px;
+}
+
+.check-row + .check-row, .choice + .choice { border-top: 1px solid var(--line); }
+.check-row, .choice { cursor: pointer; }
+.check-row input, .choice input {
+  inline-size: 16px;
+  block-size: 16px;
+  margin: 0;
+  flex: none;
+  accent-color: var(--accent);
+}
+
+.check-row .suffix { margin-inline-start: auto; font-size: 12px; }
+.status, .notice { margin-top: 12px; }
+.status { color: var(--muted); }
+.notice { padding: 12px; border-radius: 12px; color: var(--notice); background: var(--surface); }
+
+.workspace {
+  max-width: 780px;
+  margin: auto;
+  padding: clamp(16px, 5vw, 40px);
+}
+
+.workspace .brand { margin-bottom: 28px; }
+.workspace h1 { font-size: 28px; margin-bottom: 16px; }
+.workspace #content { display: grid; gap: 16px; }
+.card { padding: 16px; min-width: 0; }
+
+.preview {
+  display: grid;
+  align-items: center;
+  grid-template-columns: minmax(72px, 124px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.preview img {
+  width: 100%;
+  height: 88px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: var(--inset);
+}
+
+.preview strong { overflow-wrap: anywhere; }
+.choice > span { display: grid; flex: 1; padding: 4px 0; overflow-wrap: anywhere; }
+.choice small { color: var(--muted); font-size: 12px; }
+legend { padding: 0; font-weight: 600; }
+fieldset { min-width: 0; margin: 0; padding: 8px 16px; border: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 12px; }
+
+button {
+  border: 1px solid var(--outline);
+  color: var(--text);
+  background: transparent;
+  border-radius: 32px;
+  min-height: 42px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) { background: var(--inset); }
+button.primary { border-color: transparent; background: var(--accent); color: var(--on-accent); font-weight: 600; }
+button.primary:hover:not(:disabled) { filter: brightness(1.10); background: var(--accent); }
+button:disabled { opacity: .55; cursor: default; }
+.detail { margin-top: 8px; }
+.capture { display: grid; justify-items: center; }
+.crop-stage { position: relative; display: inline-block; width: fit-content; max-width: 100%; touch-action: none; cursor: crosshair; }
+.crop-stage img { display: block; max-width: 100%; max-height: 62vh; object-fit: contain; user-select: none; }
+.crop-box { position: absolute; box-sizing: border-box; border: 2px solid #a5afff; box-shadow: inset 0 0 0 1px #171721; pointer-events: none; }
+.crop-fields { width: 100%; margin-top: 12px; }
+.crop-fields summary { cursor: pointer; }
+.coords { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 8px; }
+.coords label { display: grid; gap: 4px; }
+.coords input { width: 100%; border: 1px solid var(--outline); padding: 6px 8px; border-radius: 8px; color: var(--text); background: var(--inset); }
