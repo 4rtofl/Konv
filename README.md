@@ -24,3 +24,7 @@ Base64出力もあります。開き方のヒントは、このREADMEのソー�
 <!--
 node -p "Buffer.from('6Kit5a6a44Od44OD44OX44Ki44OD44OX44Gu5Lit44Gr44GC44KL44Ot44K044KSN+WbnuOCr+ODquODg+OCr+OAguOCguOBhuS4gOW6pjflm57jgq/jg6rjg4Pjgq/jgZnjgovjgajpnZ7ooajnpLrjgavjgarjgorjgb7jgZnjgII=', 'base64').toString('utf8')"
 -->
+
+## プライバシー
+
+[プライバシーポリシー](./PRIVACY.md)
