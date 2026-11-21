@@ -1,4 +1,5 @@
 import { formats, type Download, type Format, type PixelRect } from "./shared.js";
+import { applyPalette, GIFEncoder, quantize } from "./vendor/gifenc.esm.js";
 
 declare const PDFLib: typeof import("pdf-lib");
 
@@ -140,8 +141,46 @@ async function singlePagePdf(canvas: HTMLCanvasElement): Promise<Blob> {
   return new Blob([bytes], { type: formats.pdf.mime });
 }
 
+function encodeGif({ data, width, height }: ImageData): Blob {
+  const transparent = data.some((value, index) => index % 4 === 3 && value < 128);
+  let opaque = data;
+  if (transparent) {
+    opaque = new Uint8ClampedArray(data.length);
+    let offset = 0;
+    for (let source = 0; source < data.length; source += 4) {
+      if (data[source + 3] < 128) continue;
+      opaque[offset++] = data[source];
+      opaque[offset++] = data[source + 1];
+      opaque[offset++] = data[source + 2];
+      opaque[offset++] = 255;
+    }
+    opaque = opaque.subarray(0, offset);
+  }
+  const palette = opaque.length ? quantize(opaque, transparent ? 255 : 256) : [];
+  const opaquePixels = opaque.length ? applyPalette(opaque, palette) : new Uint8Array();
+  let pixels = opaquePixels;
+  const transparentIndex = palette.length;
+
+  if (transparent) {
+    palette.push([0, 0, 0]);
+    pixels = new Uint8Array(width * height);
+    let opaquePixel = 0;
+    for (let pixel = 0; pixel < pixels.length; pixel++) {
+      pixels[pixel] = data[pixel * 4 + 3] < 128 ? transparentIndex : opaquePixels[opaquePixel++];
+    }
+  }
+
+  const gif = GIFEncoder();
+  gif.writeFrame(pixels, width, height, { palette, transparent, transparentIndex });
+  gif.finish();
+  return new Blob([new Uint8Array(gif.bytes())], { type: formats.gif.mime });
+}
+
 export async function encodeImage(sourceUrl: string, format: Exclude<Format, "original" | "base64">): Promise<Blob> {
   const image = await loadImage(sourceUrl);
+  if (format === "gif" && (image.naturalWidth > 0xffff || image.naturalHeight > 0xffff)) {
+    throw new Error("GIFで保存できる画像の幅と高さは65,535ピクセルまでです。");
+  }
   const canvas = canvasFor(image.naturalWidth, image.naturalHeight);
   const context = canvas.getContext("2d");
   if (!context) throw new Error("画像を描画できませんでした。");
@@ -150,6 +189,7 @@ export async function encodeImage(sourceUrl: string, format: Exclude<Format, "or
     context.fillRect(0, 0, canvas.width, canvas.height);
   }
   context.drawImage(image, 0, 0);
+  if (format === "gif") return encodeGif(context.getImageData(0, 0, canvas.width, canvas.height));
   return format === "pdf" ? singlePagePdf(canvas) : canvasBlob(canvas, formats[format].mime);
 }
 

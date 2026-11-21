@@ -2,6 +2,7 @@ export const formats = {
   original: { label: "元の形式", description: "画像データをそのまま保存" },
   png: { label: "PNG", mime: "image/png", extension: "png", description: "透過を保持" },
   jpeg: { label: "JPEG", mime: "image/jpeg", extension: "jpg", description: "写真向け・透過部分は白" },
+  gif: { label: "GIF", mime: "image/gif", extension: "gif", description: "最大256色・透過は1ビット" },
   webp: { label: "WebP", mime: "image/webp", extension: "webp", description: "透過を保持" },
   pdf: { label: "PDF", mime: "application/pdf", extension: "pdf", description: "画像を1ページに保存" },
   base64: { label: "Base64", extension: "base64.txt", description: "画像データをBase64のテキストで保存" },
@@ -11,7 +12,7 @@ export type Format = keyof typeof formats;
 export const formatIds = Object.keys(formats) as Format[];
 export const settingsKey = "quickFormats";
 export const base64Key = "base64Enabled";
-export const defaultQuick = ["original", "png", "jpeg", "webp"] as const;
+export const defaultQuick = ["png", "jpeg", "gif"] as const;
 
 export function isFormat(value: unknown): value is Format {
   return typeof value === "string" && Object.hasOwn(formats, value);
