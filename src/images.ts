@@ -1,4 +1,5 @@
 import { formats, type Download, type Format, type PixelRect } from "./shared.js";
+import { applyPalette, GIFEncoder, quantize } from "./vendor/gifenc.esm.js";
 
 declare const PDFLib: typeof import("pdf-lib");
 
@@ -140,6 +141,26 @@ async function singlePagePdf(canvas: HTMLCanvasElement): Promise<Blob> {
   return new Blob([bytes], { type: formats.pdf.mime });
 }
 
+function encodeGif({ data, width, height }: ImageData): Blob {
+  const transparent = data.some((value, index) => index % 4 === 3 && value < 128);
+  const palette = quantize(data, transparent ? 255 : 256);
+  const pixels = applyPalette(data, palette);
+  const transparentIndex = palette.length;
+
+  if (transparent) {
+    // Reserve a separate entry so opaque pixels of the same color stay opaque.
+    palette.push([0, 0, 0]);
+    for (let pixel = 0; pixel < pixels.length; pixel++) {
+      if (data[pixel * 4 + 3] < 128) pixels[pixel] = transparentIndex;
+    }
+  }
+
+  const gif = GIFEncoder();
+  gif.writeFrame(pixels, width, height, { palette, transparent, transparentIndex });
+  gif.finish();
+  return new Blob([new Uint8Array(gif.bytes())], { type: formats.gif.mime });
+}
+
 export async function encodeImage(sourceUrl: string, format: Exclude<Format, "original" | "base64">): Promise<Blob> {
   const image = await loadImage(sourceUrl);
   const canvas = canvasFor(image.naturalWidth, image.naturalHeight);
@@ -150,6 +171,7 @@ export async function encodeImage(sourceUrl: string, format: Exclude<Format, "or
     context.fillRect(0, 0, canvas.width, canvas.height);
   }
   context.drawImage(image, 0, 0);
+  if (format === "gif") return encodeGif(context.getImageData(0, 0, canvas.width, canvas.height));
   return format === "pdf" ? singlePagePdf(canvas) : canvasBlob(canvas, formats[format].mime);
 }
 

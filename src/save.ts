@@ -111,7 +111,7 @@ function preview(asset: Asset) {
 
 function renderFormats(job: SaveJob, asset: Asset, { available, quick }: Awaited<ReturnType<typeof getFormatSettings>>) {
   const choicesForAsset = available.filter(format =>
-    (!asset.animated || format === "original" || format === "base64")
+    (!asset.animated || format === "original" || format === "base64" || format === "gif")
       && (job.mode !== "other" || !quick.includes(format)));
   content.append(preview(asset));
   if (!choicesForAsset.length) {
