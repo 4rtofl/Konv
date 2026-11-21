@@ -1,5 +1,5 @@
 import {
-  base64Key, errorText, formats, getFormatSettings, isFormat, unwrap,
+  errorText, formats, getFormatSettings, hiddenFormatsKey, isFormat, unwrap,
   type Asset, type Crop, type PixelRect, type Reply, type SaveJob, type WorkbenchRequest,
 } from "./shared.js";
 
@@ -259,7 +259,7 @@ async function render(job: SaveJob) {
 }
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && base64Key in changes && displayedJob?.asset) {
+  if (area === "local" && hiddenFormatsKey in changes && displayedJob?.asset) {
     void render(displayedJob).then(() => setBusy(busy), error => showError(errorText(error)));
   }
 });

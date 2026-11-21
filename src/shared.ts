@@ -3,6 +3,9 @@ export const formats = {
   png: { label: "PNG", mime: "image/png", extension: "png", description: "透過を保持" },
   jpeg: { label: "JPEG", mime: "image/jpeg", extension: "jpg", description: "写真向け・透過部分は白" },
   webp: { label: "WebP", mime: "image/webp", extension: "webp", description: "透過を保持" },
+  avif: { label: "AVIF", mime: "image/avif", extension: "avif", description: "透過を保持" },
+  bmp: { label: "BMP", mime: "image/bmp", extension: "bmp", description: "透過部分は白" },
+  nuv: { label: "NUV", mime: "video/x-nuppelvideo", extension: "nuv", description: "1フレームの動画・透過部分は白" },
   pdf: { label: "PDF", mime: "application/pdf", extension: "pdf", description: "画像を1ページに保存" },
   base64: { label: "Base64", extension: "base64.txt", description: "画像データをBase64のテキストで保存" },
 } as const;
@@ -10,16 +13,21 @@ export const formats = {
 export type Format = keyof typeof formats;
 export const formatIds = Object.keys(formats) as Format[];
 export const settingsKey = "quickFormats";
-export const base64Key = "base64Enabled";
+// Keep the existing storage key so Base64 stays enabled for users who unlocked it.
+export const hiddenFormatsKey = "base64Enabled";
 export const defaultQuick = ["original", "png", "jpeg", "webp"] as const;
 
 export function isFormat(value: unknown): value is Format {
   return typeof value === "string" && Object.hasOwn(formats, value);
 }
 
+export function isHiddenFormat(format: Format): boolean {
+  return format === "base64" || format === "nuv";
+}
+
 export async function getFormatSettings() {
-  const { quickFormats, base64Enabled } = await chrome.storage.local.get([settingsKey, base64Key]);
-  const available = formatIds.filter(format => format !== "base64" || base64Enabled === true);
+  const { quickFormats, [hiddenFormatsKey]: hiddenFormatsEnabled } = await chrome.storage.local.get([settingsKey, hiddenFormatsKey]);
+  const available = formatIds.filter(format => !isHiddenFormat(format) || hiddenFormatsEnabled === true);
   const saved: readonly unknown[] = Array.isArray(quickFormats) ? quickFormats : defaultQuick;
   return { available, quick: available.filter(format => saved.includes(format)) };
 }

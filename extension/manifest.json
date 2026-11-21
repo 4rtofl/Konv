@@ -1,8 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "SaveImageAsAnyFile",
+  "name": "Konv",
   "version": "0.1.0",
-  "description": "画像を右クリックして、元の形式や PNG・JPEG・WebP・PDF で保存します。",
+  "description": "画像を右クリックして、元の形式や PNG・JPEG・WebP・AVIF・BMP・PDF で保存します。",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
   "minimum_chrome_version": "123",
   "permissions": ["activeTab", "contextMenus", "downloads", "offscreen", "scripting", "storage"],
   "optional_host_permissions": ["http://*/*", "https://*/*"],
@@ -11,7 +14,7 @@
     "type": "module"
   },
   "action": {
-    "default_title": "SaveImageAsAnyFile の設定",
+    "default_title": "Konv の設定",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon-16.png",
