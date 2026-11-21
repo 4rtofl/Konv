@@ -79,6 +79,12 @@ export function encodeNuv(context: CanvasRenderingContext2D): Blob {
         }
       }
       const sample = y / 2 * (frameWidth / 2) + x / 2;
+      // Padded pixels share chroma with the image edge. Use neutral chroma to keep the padding white.
+      if (x + 1 === width || y + 1 === height) {
+        chromaBlue[sample] = 128;
+        chromaRed[sample] = 128;
+        continue;
+      }
       chromaBlue[sample] = 128 + (-37.797 * red - 74.203 * green + 112 * blue) / 1020;
       chromaRed[sample] = 128 + (112 * red - 93.786 * green - 18.214 * blue) / 1020;
     }
