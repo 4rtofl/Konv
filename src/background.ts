@@ -1,6 +1,6 @@
 import { installPicker } from "./picker.js";
 import {
-  base64Key, errorText, formatIds, formats, getFormatSettings, isFormat, settingsKey, sitePattern, unwrap,
+  errorText, formatIds, formats, getFormatSettings, hiddenFormatsKey, isFormat, isHiddenFormat, settingsKey, sitePattern, unwrap,
   type Asset, type Crop, type Download, type Format, type Mode, type OffscreenRequest,
   type PickResult, type Reply, type SaveJob, type Source, type View, type WorkbenchRequest,
 } from "./shared.js";
@@ -62,7 +62,7 @@ function queueMenu(operation: () => Promise<void>) {
 chrome.runtime.onInstalled.addListener(() => queueMenu(registerMenu));
 chrome.runtime.onStartup.addListener(() => queueMenu(registerMenu));
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && (settingsKey in changes || base64Key in changes)) queueMenu(updateMenu);
+  if (area === "local" && (settingsKey in changes || hiddenFormatsKey in changes)) queueMenu(updateMenu);
 });
 
 async function ensureOffscreen() {
@@ -193,8 +193,8 @@ chrome.downloads.onChanged.addListener(change => {
 });
 
 async function download(asset: Asset, format: Format) {
-  if (format === "base64" && !(await getFormatSettings()).available.includes(format)) {
-    throw new Error("Base64は現在非表示です。");
+  if (isHiddenFormat(format) && !(await getFormatSettings()).available.includes(format)) {
+    throw new Error(`${formats[format].label}は現在非表示です。`);
   }
   const result = await offscreen<Download>({ action: "encode", id: asset.id, format });
   let id: number;

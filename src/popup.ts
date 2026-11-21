@@ -1,4 +1,4 @@
-import { base64Key, errorText, formats, getFormatSettings, settingsKey } from "./shared.js";
+import { errorText, formats, getFormatSettings, hiddenFormatsKey, isHiddenFormat, settingsKey } from "./shared.js";
 
 const list = document.querySelector<HTMLDivElement>("#formats")!;
 const status = document.querySelector<HTMLParagraphElement>("#status")!;
@@ -38,12 +38,12 @@ icon.addEventListener("click", () => {
     const { available, quick } = await getFormatSettings();
     const enabled = !available.includes("base64");
     if (enabled) {
-      await chrome.storage.local.set({ [base64Key]: true });
+      await chrome.storage.local.set({ [hiddenFormatsKey]: true });
     } else {
-      await chrome.storage.local.set({ [base64Key]: false, [settingsKey]: quick.filter(format => format !== "base64") });
+      await chrome.storage.local.set({ [hiddenFormatsKey]: false, [settingsKey]: quick.filter(format => !isHiddenFormat(format)) });
     }
     await render();
-    status.textContent = enabled ? "Base64を表示しました。" : "Base64を非表示にしました。";
+    status.textContent = enabled ? "Base64とNUVを表示しました。" : "Base64とNUVを非表示にしました。";
     status.hidden = false;
   })().catch(showError).finally(() => {
     icon.disabled = false;

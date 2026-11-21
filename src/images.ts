@@ -1,4 +1,5 @@
 import { formats, type Download, type Format, type PixelRect } from "./shared.js";
+import { encodeAvif, encodeBmp, encodeNuv } from "./extra-formats.js";
 import { applyPalette, GIFEncoder, quantize } from "./vendor/gifenc.esm.js";
 
 declare const PDFLib: typeof import("pdf-lib");
@@ -184,12 +185,17 @@ export async function encodeImage(sourceUrl: string, format: Exclude<Format, "or
   const canvas = canvasFor(image.naturalWidth, image.naturalHeight);
   const context = canvas.getContext("2d");
   if (!context) throw new Error("画像を描画できませんでした。");
-  if (format === "jpeg") {
+  if (format === "jpeg" || format === "bmp" || format === "nuv") {
     context.fillStyle = "#fff";
     context.fillRect(0, 0, canvas.width, canvas.height);
   }
   context.drawImage(image, 0, 0);
   if (format === "gif") return encodeGif(context.getImageData(0, 0, canvas.width, canvas.height));
+  if (format === "nuv") return encodeNuv(context);
+  if (format === "avif" || format === "bmp") {
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+    return format === "avif" ? encodeAvif(pixels) : encodeBmp(pixels);
+  }
   return format === "pdf" ? singlePagePdf(canvas) : canvasBlob(canvas, formats[format].mime);
 }
 

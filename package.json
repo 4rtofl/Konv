@@ -1,5 +1,5 @@
 {
-  "name": "save-image-as-any-file",
+  "name": "konv",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -8,6 +8,7 @@
     "build": "tsc && node scripts/package.mjs"
   },
   "dependencies": {
+    "@jsquash/avif": "2.1.1",
     "gifenc": "1.0.3",
     "pdf-lib": "1.17.1"
   },
