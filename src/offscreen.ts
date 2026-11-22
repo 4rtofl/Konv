@@ -70,8 +70,8 @@ async function process(request: OffscreenRequest, credentialed: boolean) {
   if (format === "base64") {
     return downloadFile(await encodeBase64(entry.blob), entry.asset.name, formats[format].extension);
   }
-  if (format === "gif" && entry.blob.type === formats.gif.mime) {
-    return downloadFile(entry.blob, entry.asset.name, formats.gif.extension);
+  if ((format === "gif" || format === "tiff") && entry.blob.type === formats[format].mime) {
+    return downloadFile(entry.blob, entry.asset.name, formats[format].extension);
   }
   if (entry.asset.animated) throw new Error("アニメーションGIFは「GIF」または「元の形式」で保存してください。");
   const converted = await encodeImage(entry.asset.preview, format);

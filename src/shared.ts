@@ -6,6 +6,7 @@ export const formats = {
   webp: { label: "WebP", mime: "image/webp", extension: "webp", description: "透過を保持" },
   avif: { label: "AVIF", mime: "image/avif", extension: "avif", description: "透過を保持" },
   bmp: { label: "BMP", mime: "image/bmp", extension: "bmp", description: "透過部分は白" },
+  tiff: { label: "TIFF", mime: "image/tiff", extension: "tiff", description: "透過を保持・無圧縮" },
   nuv: { label: "NUV", mime: "video/x-nuppelvideo", extension: "nuv", description: "1フレームの動画・透過部分は白" },
   pdf: { label: "PDF", mime: "application/pdf", extension: "pdf", description: "画像を1ページに保存" },
   base64: { label: "Base64", extension: "base64.txt", description: "画像データをBase64のテキストで保存" },
