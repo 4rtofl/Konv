@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Konv",
-  "version": "0.1.0",
-  "description": "画像を右クリックして、元の形式や PNG・JPEG・WebP・AVIF・BMP・PDF で保存します。",
+  "version": "0.2.0",
+  "description": "画像を右クリックして、元の形式や PNG・JPEG・GIF・WebP・AVIF・BMP・TIFF・PDF で保存します。",
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
   },
