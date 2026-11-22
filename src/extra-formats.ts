@@ -46,6 +46,54 @@ export function encodeBmp({ data, width, height }: ImageData): Blob {
   return new Blob([bytes], { type: formats.bmp.mime });
 }
 
+export function encodeTiff({ data, width, height }: ImageData): Blob {
+  const bitsOffset = 8;
+  const resolutionOffset = bitsOffset + 8;
+  const pixelOffset = resolutionOffset + 8;
+  const directoryOffset = pixelOffset + data.byteLength;
+  const header = new DataView(new ArrayBuffer(pixelOffset));
+  header.setUint16(0, 0x4949, true);
+  header.setUint16(2, 42, true);
+  header.setUint32(4, directoryOffset, true);
+  for (let channel = 0; channel < 4; channel++) {
+    header.setUint16(bitsOffset + channel * 2, 8, true);
+  }
+  header.setUint32(resolutionOffset, 72, true);
+  header.setUint32(resolutionOffset + 4, 1, true);
+
+  const short = 3;
+  const long = 4;
+  const rational = 5;
+  const fields = [
+    [256, long, 1, width],              // ImageWidth
+    [257, long, 1, height],             // ImageLength
+    [258, short, 4, bitsOffset],        // BitsPerSample
+    [259, short, 1, 1],                 // Compression (none)
+    [262, short, 1, 2],                 // PhotometricInterpretation (RGB)
+    [273, long, 1, pixelOffset],        // StripOffsets
+    [277, short, 1, 4],                 // SamplesPerPixel
+    [278, long, 1, height],             // RowsPerStrip
+    [279, long, 1, data.byteLength],    // StripByteCounts
+    [282, rational, 1, resolutionOffset], // XResolution
+    [283, rational, 1, resolutionOffset], // YResolution
+    [284, short, 1, 1],                 // PlanarConfiguration (chunky)
+    [296, short, 1, 2],                 // ResolutionUnit (inch)
+    // Canvas ImageData stores unassociated alpha.
+    [338, short, 1, 2],                 // ExtraSamples
+  ];
+  const directory = new DataView(new ArrayBuffer(2 + fields.length * 12 + 4));
+  directory.setUint16(0, fields.length, true);
+  fields.forEach(([tag, type, count, value], index) => {
+    const offset = 2 + index * 12;
+    directory.setUint16(offset, tag, true);
+    directory.setUint16(offset + 2, type, true);
+    directory.setUint32(offset + 4, count, true);
+    directory.setUint32(offset + 8, value, true);
+  });
+
+  return new Blob([header.buffer, data, directory.buffer], { type: formats.tiff.mime });
+}
+
 export function encodeNuv(context: CanvasRenderingContext2D): Blob {
   const { width, height } = context.canvas;
   const frameWidth = Math.ceil(width / 2) * 2;

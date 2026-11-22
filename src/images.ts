@@ -1,5 +1,5 @@
 import { formats, type Download, type Format, type PixelRect } from "./shared.js";
-import { encodeAvif, encodeBmp, encodeNuv } from "./extra-formats.js";
+import { encodeAvif, encodeBmp, encodeNuv, encodeTiff } from "./extra-formats.js";
 import { applyPalette, GIFEncoder, quantize } from "./vendor/gifenc.esm.js";
 
 declare const PDFLib: typeof import("pdf-lib");
@@ -191,6 +191,7 @@ export async function encodeImage(sourceUrl: string, format: Exclude<Format, "or
   }
   context.drawImage(image, 0, 0);
   if (format === "gif") return encodeGif(context.getImageData(0, 0, canvas.width, canvas.height));
+  if (format === "tiff") return encodeTiff(context.getImageData(0, 0, canvas.width, canvas.height));
   if (format === "nuv") return encodeNuv(context);
   if (format === "avif" || format === "bmp") {
     const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
