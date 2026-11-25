@@ -2,6 +2,10 @@
 
 ウェブページの画像を右クリックし、好きなファイル名と保存先で保存できるChrome拡張機能です。元の形式、PNG、JPEG、WebP、AVIF、BMP、TIFF、PDFに対応し、アニメーションGIFは動きを保ったまま保存できます。形式変換はブラウザ内で行います。
 
+## Chrome Web Store
+
+[Versionが基本Githubより少し遅れています](https://chromewebstore.google.com/detail/iindbmfojjjlagdblmkklmlemoodbjmc?utm_source=item-share-cb)
+
 ## インストール
 
 Node.jsとnpmがある環境で、次のコマンドを実行します。
