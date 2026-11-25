@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Konv",
   "version": "0.2.0",
-  "description": "画像を右クリックして、元の形式や PNG・JPEG・GIF・WebP・AVIF・BMP・TIFF・PDF で保存します。",
+  "description": "ウェブページの画像を右クリックし、元のままや別の形式に変換して、好きな名前と場所に保存できます。",
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
   },
